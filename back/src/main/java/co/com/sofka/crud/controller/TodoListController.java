@@ -1,16 +1,12 @@
 package co.com.sofka.crud.controller;
 
-import co.com.sofka.crud.dto.TodosDTO;
-import co.com.sofka.crud.models.Todo;
 import co.com.sofka.crud.models.TodoList;
 import co.com.sofka.crud.service.TodoListService;
 import org.apache.coyote.Response;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -24,7 +20,6 @@ import java.util.NoSuchElementException;
 public class TodoListController {
 
     private final TodoListService service;
-    private final Response response = new Response();
     private HttpStatus httpStatus = HttpStatus.OK;
 
     public TodoListController(TodoListService service) {
@@ -33,7 +28,7 @@ public class TodoListController {
 
     /**
      * Metodo que sirve para obtenerme todos los registros de los TodoLists haciendo uso del servicio
-     * @return Codigos de estado de respuesta Http
+     * @return una lita de los TodoList y codigos de estado de respuesta Http
      */
     @GetMapping(value = "/todolist")
     public ResponseEntity<List<TodoList>> getAllTodoList() {
@@ -49,9 +44,9 @@ public class TodoListController {
     }
 
     /**
-     * Metodo que sirve para enrutarme a la clase service para obtener un get de un solo TodoList mediante el id.
+     * Metodo que sirve para obtener un solo registro de los todos haciendo uso del servicio
      * @param id
-     * @return Codigos de estado de respuesta Http
+     * @return un objeto TodoList y codigos de estado de respuesta Http
      */
     @GetMapping(value = "/{id}/todolist")
     public ResponseEntity<TodoList> getTodoById(@PathVariable("id") Long id) {
@@ -74,8 +69,7 @@ public class TodoListController {
     }
 
     /**
-     * Metodo que sirve para guardar un nuevo TodoList, haciendo uso del servicio y del Model Mapper para el mapeo
-     * de Entidad a DTO y viceversa
+     * Metodo que sirve para guardar un nuevo TodoList, haciendo uso del servicio
      * @param todoList
      * @return Codigos de estado de respuesta Http
      */
@@ -111,10 +105,9 @@ public class TodoListController {
     }
 
     /**
-     * Metodo que sirve para actualizar un TodoList existente haciendo uso del servicio y el Model Mapper para
-     * el mapeo de Entidad a DTO y viceversa.
+     * Metodo que sirve para actualizar un TodoList existente haciendo uso del servicio
      * @param todoLists
-     * @return Codigos de estado de respuesta Http
+     * @return un objeto actualizado TodoList y codigos de estado de respuesta Http
      */
     @PutMapping(value = "/{id}/todolist")
     public ResponseEntity<TodoList> updateTodo(@PathVariable(value = "id") Long id, @RequestBody TodoList todoLists) {

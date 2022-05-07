@@ -2,7 +2,6 @@ package co.com.sofka.crud.controller;
 
 import co.com.sofka.crud.dto.TodosDTO;
 import co.com.sofka.crud.models.Todo;
-import co.com.sofka.crud.models.TodoList;
 import co.com.sofka.crud.service.TodoService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
@@ -11,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 /**
  * Clase que representa el controlador de la entidad Todo que se encarga de todas las peticiones HTTP
@@ -24,7 +22,6 @@ import java.util.NoSuchElementException;
 public class TodoController {
 
     private final TodoService service;
-    private final Response response = new Response();
     private HttpStatus httpStatus = HttpStatus.OK;
 
     public TodoController(TodoService service) {
@@ -34,7 +31,7 @@ public class TodoController {
 
     /**
      * Metodo que sirve para obtenerme todos los registros de los todos haciendo uso del servicio
-     * @return Codigos de estado de respuesta Http
+     * @return una lista Todos y codigos de estado de respuesta Http
      */
     @GetMapping(value = "/todolist")
     public ResponseEntity<List<TodosDTO>> list() {
@@ -42,9 +39,9 @@ public class TodoController {
     }
 
     /**
-     * Metodo que sirve para enrutarme a la clase service para obtener un get de un solo Todo mediante el id.
+     * Metodo que sirve para obtener un solo registro de los todos haciendo uso del servicio
      * @param id
-     * @return Codigos de estado de respuesta Http
+     * @return un objeto Todo y codigos de estado de respuesta Http
      */
     @GetMapping(value = "/{id}/todo")
     public ResponseEntity<Todo> getTodoById(@PathVariable("id") Long id) {
@@ -67,8 +64,7 @@ public class TodoController {
     }
 
     /**
-     * Metodo que sirve para guardar un nuevo todo, haciendo uso del servicio y del Model Mapper para el mapeo
-     * de Entidad a DTO y viceversa
+     * Metodo que sirve para guardar un nuevo todo, haciendo uso del servicio
      * @param todo
      * @return Codigos de estado de respuesta Http
      */
@@ -106,10 +102,9 @@ public class TodoController {
     }
 
     /**
-     * Metodo que sirve para actualizar un todo existente haciendo uso del servicio y el Model Mapper para
-     * el mapeo de Entidad a DTO y viceversa.
+     * Metodo que sirve para actualizar un todo existente haciendo uso del servicio
      * @param id, todoDTO
-     * @return Codigos de estado de respuesta Http
+     * @return un objeto actualizado DTO y codigos de estado de respuesta Http
      */
     @PutMapping(value = "/{id}/todo")
     public ResponseEntity<TodosDTO> updateTodo(@PathVariable(value = "id") Long id, @RequestBody TodosDTO todoDTO) {
