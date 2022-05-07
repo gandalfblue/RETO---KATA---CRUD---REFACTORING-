@@ -1,25 +1,31 @@
 package co.com.sofka.crud.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
-import javax.persistence.*;
-import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 /**
  * Clase que representa a la identidad Todo, cuya tabla se crea en la base de datos
  */
+@Builder
 @Getter
 @Setter
-@ToString
-@RequiredArgsConstructor
-@Table(name = "Todo")
+@NoArgsConstructor
 @Entity
-public class Todo implements Serializable {
-
-    private static final long serialVersionUID = -122654484665466132L;
+@AllArgsConstructor
+public class Todo {
 
     /**
      * Atributo que representa a la columna id de la tabla Todo en la base de datos
@@ -31,18 +37,23 @@ public class Todo implements Serializable {
     /**
      * Atributo que representa a la columna name de la tabla Todo en la base de datos
      */
-    @Column(name = "name", nullable = false)
+    @Column(unique = true, nullable = false)
     private String name;
 
     /**
      * Atributo que representa a la columna completed de la tabla Todo en la base de datos
      */
-    @Column(name = "completed", nullable = false)
+    @Column(nullable = false)
     private boolean completed;
 
     /**
-     * Atributo que representa a la columna groupListId de la tabla Todo en la base de datos
+     *  Anotación que me permite la relación Muchos a Uno con la tabla TodoList
      */
-    @Column(name = "groupListId", nullable = false)
-    private String groupListId;
+    @ManyToOne(fetch = FetchType.LAZY,
+                targetEntity = TodoList.class,
+                optional = false
+    )
+    @JoinColumn(name = "id_todolist")
+    @JsonBackReference
+    private TodoList todoList;
 }

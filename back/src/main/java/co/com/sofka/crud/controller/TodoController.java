@@ -1,90 +1,84 @@
 package co.com.sofka.crud.controller;
 
-import co.com.sofka.crud.dto.TodoDTO;
-import co.com.sofka.crud.modelMapper.SingleModelMapper;
+import co.com.sofka.crud.dto.TodosDTO;
+import co.com.sofka.crud.models.Todo;
+import co.com.sofka.crud.models.TodoList;
 import co.com.sofka.crud.service.TodoService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 /**
  * Clase que representa el controlador de la entidad Todo que se encarga de todas las peticiones HTTP
  * para las operaciones CRUD
  */
+@Slf4j
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class TodoController {
 
-    private final TodoService todoService;
+    private final TodoService service;
+    private final Response response = new Response();
+    private HttpStatus httpStatus = HttpStatus.OK;
 
-    private final SingleModelMapper modelMapper;
-
-    @Autowired
-    public TodoController(TodoService todoService, SingleModelMapper modelMapper) {
-        this.todoService = todoService;
-        this.modelMapper = modelMapper;
+    public TodoController(TodoService service) {
+        this.service = service;
     }
+
 
     /**
      * Metodo que sirve para obtenerme todos los registros de los todos haciendo uso del servicio
-     * @param id
      * @return Codigos de estado de respuesta Http
      */
     @GetMapping(value = "/todolist")
-    public ResponseEntity<List<TodoDTO>> getAllTodo(@RequestParam(required = false) Long id) {
-        try {
-            List<TodoDTO> todoList = new ArrayList<>();
-
-            if (id == null) {
-                return ResponseEntity.ok(todoService.list().stream().map(modelMapper::mapTodoDTO)
-                        .collect(Collectors.toList()));
-            }
-
-            if (todoList.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            return new ResponseEntity<>(todoList, HttpStatus.OK);
-
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<List<TodosDTO>> list() {
+        return new ResponseEntity<>(service.list(), HttpStatus.OK);
     }
 
     /**
-     * Metodo que sirve para enrutarme a la clase service para obtener un get de un solo T odo mediante el id.
+     * Metodo que sirve para enrutarme a la clase service para obtener un get de un solo Todo mediante el id.
      * @param id
      * @return Codigos de estado de respuesta Http
      */
     @GetMapping(value = "/{id}/todo")
-    public ResponseEntity<TodoDTO> getTodoById(@PathVariable("id") Long id) {
+    public ResponseEntity<Todo> getTodoById(@PathVariable("id") Long id) {
+        Todo todo;
 
         try{
-            return new ResponseEntity<>(modelMapper.mapTodoDTO(todoService.get(id)), HttpStatus.OK);
-        }catch (NoSuchElementException e ){
-            e.printStackTrace();
-            return ResponseEntity.notFound().build();
+            todo = service.getById(id);
+            if (todo == null) {
+                httpStatus = HttpStatus.NOT_FOUND;
+            } else {
+                httpStatus = HttpStatus.OK;
+            }
+
+        }catch (Exception e ){
+            e.getLocalizedMessage();
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+            throw e;
         }
+        return new ResponseEntity<>(todo, httpStatus);
     }
 
     /**
      * Metodo que sirve para guardar un nuevo todo, haciendo uso del servicio y del Model Mapper para el mapeo
      * de Entidad a DTO y viceversa
-     * @param todoDTO
+     * @param todo
      * @return Codigos de estado de respuesta Http
      */
-    @PostMapping(value = "/todo")
-    public ResponseEntity<TodoDTO> createTodo(@RequestBody TodoDTO todoDTO) {
-        try {
 
-            return new ResponseEntity<>(modelMapper.mapTodoDTO(
-                                        todoService.save(modelMapper.mapTodo(todoDTO))),HttpStatus.CREATED);
+    @CrossOrigin
+    @PostMapping(value = "/todo")
+    public ResponseEntity<TodosDTO> createTodo(@RequestBody TodosDTO todo) {
+
+        try {
+            return new ResponseEntity<>(service.save(todo),HttpStatus.CREATED);
 
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.EXPECTATION_FAILED);
@@ -97,10 +91,15 @@ public class TodoController {
      * @return Codigos de estado de respuesta Http
      */
     @DeleteMapping(value = "/{id}/todo")
-    public ResponseEntity<String> deleteTodoById(@PathVariable("id") Long id) {
+    public ResponseEntity<Todo> deleteTodoById(@PathVariable("id") Long id) {
         try {
-            todoService.delete(id);
-            return new ResponseEntity<>("Todo DELETE!! ", HttpStatus.OK);
+            Todo todo = service.deleteById(id);
+            if (todo == null){
+                httpStatus = HttpStatus.NOT_FOUND;
+            }else {
+                httpStatus = HttpStatus.OK;
+            }
+            return new ResponseEntity<>(todo, httpStatus);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
@@ -108,16 +107,23 @@ public class TodoController {
 
     /**
      * Metodo que sirve para actualizar un todo existente haciendo uso del servicio y el Model Mapper para
-     * el mapeo de Entidad a DTO y viceversa.     *
-     * @param todoDTO
+     * el mapeo de Entidad a DTO y viceversa.
+     * @param id, todoDTO
      * @return Codigos de estado de respuesta Http
      */
-    @PutMapping(value = "/todo")
-    public ResponseEntity<TodoDTO> updateTodo(@RequestBody TodoDTO todoDTO) {
-        if (todoDTO.getId() != null) {
-            return new ResponseEntity<>(modelMapper.mapTodoDTO(todoService.saveUpdate(
-                                        modelMapper.mapTodo(todoDTO))), HttpStatus.OK);
+    @PutMapping(value = "/{id}/todo")
+    public ResponseEntity<TodosDTO> updateTodo(@PathVariable(value = "id") Long id, @RequestBody TodosDTO todoDTO) {
+        TodosDTO todo;
+        try{
+            todo = service.update(id, todoDTO);
+            httpStatus = HttpStatus.OK;
+
+        } catch (Exception e) {
+            e.getLocalizedMessage();
+            httpStatus = HttpStatus.NOT_FOUND;
+            throw e;
         }
-        return new ResponseEntity<>(null, HttpStatus.EXPECTATION_FAILED);
+        return new ResponseEntity<>(todo, httpStatus);
+
     }
 }

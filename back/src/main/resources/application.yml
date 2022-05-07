@@ -1,7 +1,24 @@
 spring:
+  devtools:
+    livereload.enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
+    properties:
+      hibernate:
+        format_sql: true
+
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/crudspringboot
+    url: jdbc:mysql://localhost/crudspringboot
     username: root
     password: usbw
-  jpa.hibernate.ddl-auto: update
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
+logging:
+  level:
+    org.hibernate:
+      sql: debug
+      type.descriptor.sql.basic-binder: trace
