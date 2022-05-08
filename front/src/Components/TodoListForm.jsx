@@ -24,7 +24,6 @@ const TodoListForm = ({ stateList, dispatchList, urlLIST, showUpdate, setShowUpd
 
       event.target.reset();
 
-      console.log(urlLIST + "/todolist");
       fetch(urlLIST + "/todolist", {
         method: "POST",
         headers: {

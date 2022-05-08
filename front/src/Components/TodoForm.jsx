@@ -64,7 +64,7 @@ const TodoForm = ({ dispatch, todos, url, todoListId, showUpdateTodo, setShowUpd
 
   return (
     <>
-      {showUpdateTodo ? (
+      { showUpdateTodo ? (
         <form onSubmit={handleSubmit(onEdit)}>
           <input 
             type="text"
