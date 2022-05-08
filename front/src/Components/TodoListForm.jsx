@@ -1,15 +1,13 @@
 import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
-import { Store } from "../Context/ContextTodo.jsx";
 
 /**
  * Metodo que permite renderizar en el navegador y capturar los datos del formulario
  * @param {*} param0
  * @returns El formulario renderizado en el navegador
  */
-const TodoListForm = ({ count, setCount }) => {
+const TodoListForm = ({ stateList, dispatchList, urlLIST, showUpdate, setShowUpdate, idList }) => {
 
-  const { dispatchList, stateList, urlLIST } = useContext(Store);
   const itemList = stateList;
 
   const {
@@ -18,8 +16,7 @@ const TodoListForm = ({ count, setCount }) => {
     handleSubmit,
   } = useForm();
 
-  const onAdd = (data, event) => {
-    console.log(data);
+  const onAdd = (data, event) => {    
 
       const request = {
         name: data.name,
@@ -37,36 +34,42 @@ const TodoListForm = ({ count, setCount }) => {
       })
         .then((response) => response.json())
         .then((todoList) => {
-          dispatchList({ type: "addList", itemList: todoList });
+          todoList = {
+            ...todoList, todos:[]
+          }
+          dispatchList({ type: "addList", itemList: todoList });          
         });
 
-        setCount(count+1)
   };
 
   const onEdit = (data) => {
     const request = {
       name: data.name,
-      id: itemList.list.id,
+      id: idList,
       completed: itemList.list.completed  
     };
-
-    fetch(urlLIST + "/" + itemList.list.id + "/todolist", {
+    
+    fetch(urlLIST + "/" + idList + "/todolist", {
       method: "PUT",
+      mode: 'cors',
       body: JSON.stringify(request),
       headers: {
         "Content-type": "application/json",
       },
     })
       .then((response) => response.json())
-      .then((todo) => {
-        dispatchList({ type: "updateList", itemList: todo });
+      .then((todoList) => {
+        todoList = {
+          ...todoList, todos:[]
+        }
+        dispatchList({ type: "updateList", itemList: todoList });
       });
+    setShowUpdate(false)
   };
 
   return (
     <>
-    {console.log(itemList.list)}
-      {itemList.list.id ? (
+      { showUpdate ? (
         <form onSubmit={handleSubmit(onEdit)}>
           <input 
             type="text" 

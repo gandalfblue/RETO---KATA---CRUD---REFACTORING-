@@ -1,10 +1,12 @@
-import React, { useEffect, useState} from "react";
+import React, { useContext, useEffect} from "react";
 import { TodoListForm } from "../Components/TodoListForm.jsx";
 import { Todos } from "../Pages/Todos.jsx";
+import { Store } from '../Context/ContextTodo';
 
 const TodoList = ({ stateList, dispatchList, urlList }) => {
-  
-  const [ count, setCount] = useState(0);
+
+  const { showUpdate, setShowUpdate, idList, setIdList } = useContext(Store);
+
   useEffect(() => {
     fetch(urlList + "/todolist")
       .then(response => response.json())
@@ -23,7 +25,9 @@ const TodoList = ({ stateList, dispatchList, urlList }) => {
   };
 
   const onEdit = (todoList) =>{
-    dispatchList({ type: "editList", itemList: todoList})
+    dispatchList({ type: "editList", itemList: todoList}) 
+    setIdList(todoList.id)   
+    setShowUpdate(true)
   }
 
   if(!stateList.list){
@@ -33,10 +37,16 @@ const TodoList = ({ stateList, dispatchList, urlList }) => {
   return (
     <div>      
       <TodoListForm 
-      count= { count }
-      setCount= { setCount }
+      stateList= { stateList}
+      dispatchList= {dispatchList}
+      urlLIST= {urlList}
+      showUpdate= { showUpdate }
+      setShowUpdate= { setShowUpdate }
+      idList= { idList}
       />
+
       {stateList.list.length > 0 ? (
+        
         stateList.list.map((todoList, index) => (
           <div className="card " key={index}>
             <div className="card-header bg-dark text-white">

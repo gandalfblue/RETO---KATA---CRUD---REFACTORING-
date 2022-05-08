@@ -7,10 +7,10 @@
  */
 function ReducerTodo(state, action) {
     switch (action.type) {
+      
       case 'addItem':
         const newList = state.list;
-        newList.push(action.item);
-        return { ...state, list: newList }
+        return { ...state, list: [...newList, action.item] }
   
       case 'deleteItem':
         const listUpdate = state.list.filter((item) => {
@@ -19,6 +19,8 @@ function ReducerTodo(state, action) {
         return { ...state, list: listUpdate }
   
       case 'editItem':
+        console.log(state.list)
+        console.log(action.item)
         return { ...state, item: action.item }
   
       case 'updateList':

@@ -1,4 +1,4 @@
-import React, { createContext, useReducer } from 'react';
+import React, { createContext, useReducer, useState } from 'react';
 import { ReducerTodo } from '../Reducer/ReducerTodo.jsx';
 import { ReducerList } from '../Reducer/ReducerList.jsx';
 
@@ -22,6 +22,11 @@ const Store = createContext({});
 
   const StoreProvider = ({ children }) => {
 
+    const [ showUpdate, setShowUpdate ] = useState(false);
+    const [ showUpdateTodo, setShowUpdateTodo ] = useState(false);
+    const [ idList, setIdList ] = useState(); 
+    const [ idTodo, setIdTodo ] = useState();
+
     const [state, dispatch] = useReducer(ReducerTodo, initialState);
     const [stateList, dispatchList] = useReducer(ReducerList, initialStateList);
   
@@ -34,7 +39,15 @@ const Store = createContext({});
         URL,
         urlLIST,
         stateList, 
-        dispatchList
+        dispatchList,
+        showUpdate,
+        setShowUpdate,
+        idList,
+        setIdList,
+        showUpdateTodo, 
+        setShowUpdateTodo,
+        idTodo, 
+        setIdTodo
       }}>
       {children}
     </Store.Provider>

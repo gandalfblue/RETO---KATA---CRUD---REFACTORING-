@@ -3,15 +3,15 @@ import { TodoForm } from "../Components/TodoForm";
 import { Store } from "../Context/ContextTodo";
 
 const Todos = ({ todos, todoListId }) => {
-  const { dispatch, URL} = useContext(Store);
-
+  const { dispatch, URL, state, showUpdateTodo, setShowUpdateTodo, idTodo, setIdTodo } = useContext(Store);
+  
   useEffect(() => {
     fetch(URL + "/todolist")
       .then((response) => response.json())
       .then((list) => {
         dispatch({ type: "updateList", list });
       });
-  }, [URL, dispatch]);
+  }, [dispatch, URL]);
 
   const onDelete = (id) => {
     fetch(URL + "/" + id + "/todo", {
@@ -21,26 +21,33 @@ const Todos = ({ todos, todoListId }) => {
     });
   };
 
-  const onEdit = (todo) => {
+  const onEdit = (todo, todoid) => {
     dispatch({ type: "editItem", item: todo });
+    setShowUpdateTodo(true)
+    setIdTodo(todoid)
   };
+
+  const todosFilter = state.list.filter((todo)=>todo.idTodoList === todoListId )
 
   return (
     <div>
       <TodoForm 
       dispatch={ dispatch }
-      state={ todos }
+      todos={ todos }
       url={ URL }
       todoListId= { todoListId }
+      showUpdateTodo= { showUpdateTodo }
+      setShowUpdateTodo= { setShowUpdateTodo }
+      todoId = { idTodo}
       />
-      {todos.length > 0 ? (
-        todos.map((todo) => (
+      {todosFilter.length > 0 ? (
+        todosFilter.map((todo) => (
            <div className="card" key={todo.id}>
             <div className="card-body bg-dark text-white">
               <p>{todo.name}</p>
               <p>{todo.completed ? "Si" : "No"}</p>
               <button onClick={() => {onDelete(todo.id)}}>Eliminar</button>
-              <button onClick={() => {onEdit(todo)}}>Editar</button>
+              <button onClick={() => {onEdit(todo, todo.id)}}>Editar</button>
             </div>
           </div> 
         ))

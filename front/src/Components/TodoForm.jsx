@@ -6,26 +6,26 @@ import { useForm } from "react-hook-form";
  * @param {*} param0 
  * @returns El formulario renderizado en el navegador
  */
-const TodoForm = ({ dispatch, state, url, todoListId }) => {
+const TodoForm = ({ dispatch, todos, url, todoListId, showUpdateTodo, setShowUpdateTodo, todoId }) => {
+
   
-  const item = state
+  const item = todos
+
   const {
     register,
     formState: { errors },
     handleSubmit,
-    setValue,
-  } = useForm({ defaultValues: item });
-
-  setValue("name", item.name);
+  } = useForm();
 
   const onAdd = (data, event) => {
+
     const request = {
       name: data.name,
       completed: false,
       idTodoList: todoListId
     };
 
-    event.target.reset();
+    event.target.reset();    
 
     fetch(url + "/todo", {
       method: "POST",
@@ -43,12 +43,13 @@ const TodoForm = ({ dispatch, state, url, todoListId }) => {
   const onEdit = (data) => {
 
     const request = {
-      id: item.id,
+      id: todoId,
       name: data.name,      
-      completed: true,
+      completed: false,
+      idTodoList: todoListId
     };
-
-    fetch(url + "/todo", {
+    
+    fetch(url + "/" + todoId + "/todo", {
       method: "PUT",
       body: JSON.stringify(request),
       headers: {
@@ -63,7 +64,7 @@ const TodoForm = ({ dispatch, state, url, todoListId }) => {
 
   return (
     <>
-      {item.id ? (
+      {showUpdateTodo ? (
         <form onSubmit={handleSubmit(onEdit)}>
           <input 
             type="text"
