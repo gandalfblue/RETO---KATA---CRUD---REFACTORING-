@@ -42,13 +42,15 @@ const TodoListForm = ({ stateList, dispatchList, urlLIST, showUpdate, setShowUpd
 
   };
 
-  const onEdit = (data) => {
+  const onEdit = (data, event) => {
     const request = {
       name: data.name,
       id: idList,
       completed: itemList.list.completed  
     };
     
+    event.target.reset();
+
     fetch(urlLIST + "/" + idList + "/todolist", {
       method: "PUT",
       mode: 'cors',

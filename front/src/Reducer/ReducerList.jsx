@@ -19,23 +19,23 @@ function ReducerList(stateList, actionList) {
         return { ...stateList, list: listsUpdate }
   
       case 'editList':
-        
-        return { ...stateList, itemList: [actionList.itemList] }
+        return { ...stateList, itemList: actionList.itemList }
   
       case 'updateLists':
         return { ...stateList, list: actionList.list }
   
         case 'updateList':
-
+          
           const listUpdate = stateList.list.map((item) => {
-
+           
             if (item.id === actionList.itemList.id){
- 
+              
               return actionList.itemList;
             }
             return item;
           });          
-          return { ...stateList, list: [ listUpdate ], itemList: {} }
+          
+          return { ...stateList, list:  listUpdate , itemList: {} }
   
       default:
         return stateList;

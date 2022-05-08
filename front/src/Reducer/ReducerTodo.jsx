@@ -19,8 +19,6 @@ function ReducerTodo(state, action) {
         return { ...state, list: listUpdate }
   
       case 'editItem':
-        console.log(state.list)
-        console.log(action.item)
         return { ...state, item: action.item }
   
       case 'updateList':
