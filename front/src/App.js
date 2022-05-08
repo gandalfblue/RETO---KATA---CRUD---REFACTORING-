@@ -1,8 +1,7 @@
 
-import React, { Fragment, useContext } from 'react'
-import { List } from './Components/List';
-import { TodoForm } from './Components/TodoForm';
-import { Store } from './Context/Context';
+import React, { useContext } from 'react'
+import { TodoList } from '../src/Pages/TodoList.jsx';
+import { Store } from './Context/ContextTodo';
 
 /**
  * Metodo principal del proyecto que permite renderizar en el navegador los demas componentes que se
@@ -11,21 +10,15 @@ import { Store } from './Context/Context';
  */
 function App() {
 
-  const { dispatch, state, URL } = useContext(Store);
+  const { dispatchList, stateList, urlLIST } = useContext(Store);
 
   return (
-    <Fragment>
-      <TodoForm 
-        dispatch={dispatch}
-        state={ state }
-        url={ URL}
-      />
-      <List
-      dispatch={dispatch}
-        state={ state }
-        url={ URL }
-      />
-      </Fragment>
+
+      <TodoList
+        dispatchList={ dispatchList }
+        stateList={ stateList }
+        urlList={ urlLIST }
+      />      
   );
 }
 
